@@ -1,0 +1,44 @@
+@if (isLoading) {
+<div class="glass-card p-6 md:p-8 animate-pulse mt-8">
+    <div class="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/4 mb-6"></div>
+    <div class="grid grid-cols-2 md:grid-cols-7 gap-4">
+        @for (i of [1,2,3,4,5,6,7]; track i) {
+        <div class="h-32 bg-slate-200 dark:bg-slate-700 rounded-2xl"></div>
+        }
+    </div>
+</div>
+} @else if (forecastDays().length > 0) {
+<div class="glass-card p-6 md:p-8 mt-8 relative overflow-hidden group">
+    <!-- Background decoration -->
+    <div
+        class="absolute -top-12 -left-12 w-48 h-48 bg-primary-100/50 dark:bg-primary-900/30 rounded-full blur-3xl opacity-50 transition-colors duration-500">
+    </div>
+
+    <h3 class="text-xl font-bold text-slate-800 dark:text-white tracking-tight mb-6">7-Day Forecast</h3>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4">
+        @for (day of forecastDays(); track day.date) {
+        <div
+            class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-4 rounded-2xl border border-white/40 dark:border-slate-700/50 flex flex-col items-center justify-between hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all duration-300 shadow-sm cursor-pointer group/card hover:-translate-y-1">
+            <span
+                class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-2 truncate max-w-full text-center">{{day.date
+                |
+                date:'EEE'}}</span>
+            <span
+                class="text-4xl my-3 group-hover/card:scale-110 transition-transform duration-300">{{day.condition.icon}}</span>
+
+            <div class="flex items-center gap-2 mt-2 w-full justify-center">
+                <span class="text-slate-800 dark:text-white font-bold">{{day.maxTemp | number:'1.0-0'}}°</span>
+                <span class="text-slate-400 dark:text-slate-500 font-medium text-sm">{{day.minTemp |
+                    number:'1.0-0'}}°</span>
+            </div>
+
+            <div class="mt-2 text-xs text-slate-500 dark:text-slate-400 font-medium text-center truncate w-full transition-colors duration-300"
+                [title]="day.condition.description">
+                {{day.condition.description}}
+            </div>
+        </div>
+        }
+    </div>
+</div>
+}
