@@ -1,16 +1,22 @@
-import { Component, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { WeatherService } from './services/weather.service';
+import { CommonModule } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class App implements OnInit {
+  public weatherService = inject(WeatherService);
+
   protected readonly title = signal('aura-weather');
   isDarkMode = signal(true);
+  bgClass = toSignal(this.weatherService.currentBackground$, { initialValue: 'theme-clear' });
 
   ngOnInit() {
     const savedTheme = localStorage.getItem('aura-theme');

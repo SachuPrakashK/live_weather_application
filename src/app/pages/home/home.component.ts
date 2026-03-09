@@ -1,57 +1,63 @@
-import { Component, ChangeDetectionStrategy, inject, signal, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from '../../components/search/search.component';
 import { CurrentWeatherComponent } from '../../components/current-weather/current-weather.component';
 import { ForecastComponent } from '../../components/forecast/forecast.component';
+import { HourlyForecastComponent } from '../../components/hourly-forecast/hourly-forecast.component';
 import { WeatherService } from '../../services/weather.service';
 import { City } from '../../models/city.model';
-import { WeatherResponse } from '../../models/weather.model';
-import { HttpClientModule } from '@angular/common/http';
-import { switchMap, catchError, of, tap } from 'rxjs';
+import { WeatherResponse, AQIResponse } from '../../models/weather.model';
+import { combineLatest, forkJoin, of, switchMap, catchError, Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-home',
     standalone: true,
-    imports: [CommonModule, SearchComponent, CurrentWeatherComponent, ForecastComponent, HttpClientModule],
+    imports: [CommonModule, SearchComponent, CurrentWeatherComponent, HourlyForecastComponent, ForecastComponent],
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
-    private weatherService = inject(WeatherService);
+    public weatherService = inject(WeatherService);
+    private destroy$ = new Subject<void>();
 
     city = signal<City | null>(null);
     weather = signal<WeatherResponse | null>(null);
+    aqi = signal<AQIResponse | null>(null);
     isLoading = signal<boolean>(true);
     errorMsg = signal<string | null>(null);
 
     constructor() {
-        // Listen to selected city changes
-        this.weatherService.selectedCity$.subscribe(city => {
-            if (city) {
-                this.fetchWeatherData(city);
+        combineLatest([
+            this.weatherService.selectedCity$
+        ]).pipe(
+            switchMap(([city]) => {
+                if (!city) return of(null);
+                this.city.set(city);
+                this.isLoading.set(true);
+                this.errorMsg.set(null);
+
+                return forkJoin({
+                    weather: this.weatherService.getWeather(city.latitude, city.longitude).pipe(catchError(() => of(null))),
+                    aqi: this.weatherService.getAQI(city.latitude, city.longitude).pipe(catchError(() => of(null)))
+                });
+            }),
+            takeUntil(this.destroy$)
+        ).subscribe(data => {
+            if (data?.weather && data?.aqi) {
+                this.weather.set(data.weather);
+                this.aqi.set(data.aqi);
+                this.isLoading.set(false);
+                this.weatherService.updateBackground(data.weather.current.weather_code, data.weather.current.is_day === 1);
+            } else if (data) {
+                this.errorMsg.set('Failed to load complete weather data. Please try again.');
+                this.isLoading.set(false);
             }
         });
     }
 
-    private fetchWeatherData(city: City) {
-        this.city.set(city);
-        this.isLoading.set(true);
-        this.errorMsg.set(null);
-
-        this.weatherService.getWeather(city.latitude, city.longitude)
-            .pipe(
-                tap(() => this.isLoading.set(false)),
-                catchError(err => {
-                    this.isLoading.set(false);
-                    this.errorMsg.set('Failed to load weather data. Please try again later.');
-                    return of(null);
-                })
-            )
-            .subscribe(data => {
-                if (data) {
-                    this.weather.set(data);
-                }
-            });
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }

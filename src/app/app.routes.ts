@@ -1,6 +1,12 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
 
 export const routes: Routes = [
-    { path: '', component: HomeComponent }
+    {
+        path: '',
+        loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
+    },
+    {
+        path: 'favorites',
+        loadComponent: () => import('./pages/favorites/favorites.component').then(m => m.FavoritesComponent)
+    }
 ];

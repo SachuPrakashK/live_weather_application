@@ -10,7 +10,7 @@
     </div>
 </div>
 } @else if (weather() && city()) {
-<div class="glass-card p-6 md:p-8 relative overflow-hidden group">
+<div class="glass-card p-6 md:p-8 relative overflow-hidden group flex flex-col gap-6">
     <!-- Background decoration -->
     <div
         class="absolute -top-24 -right-24 w-64 h-64 bg-primary-100 dark:bg-primary-900/20 rounded-full blur-3xl opacity-50 group-hover:scale-110 transition-transform duration-700">
@@ -19,60 +19,134 @@
         class="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl opacity-50 group-hover:scale-110 transition-transform duration-700">
     </div>
 
-    <div class="relative z-10 flex flex-col md:flex-row justify-between items-center md:items-start gap-8">
-        <div class="text-center md:text-left">
-            <h2 class="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">{{city()?.name}}</h2>
-            <p class="text-slate-500 dark:text-slate-400 font-medium">{{currentDate() | date:'EEEE, MMM d, y | h:mm a'}}
-            </p>
+    <!-- Main Content (Top Area) -->
+    <div class="relative z-10 flex flex-col xl:flex-row justify-between items-center xl:items-start gap-8">
+        <div class="text-center xl:text-left pt-2 xl:pt-0 flex-1 min-w-0">
+            <div class="flex flex-col sm:flex-row items-center justify-center xl:justify-start gap-3 mb-2">
+                <h2 class="text-4xl font-extrabold text-slate-800 dark:text-white tracking-tight truncate max-w-full"
+                    [title]="city()?.name">{{city()?.name}}</h2>
 
-            <div class="mt-6 flex items-center justify-center md:justify-start gap-4">
-                <span class="text-6xl">{{condition()?.icon}}</span>
-                <div>
-                    <div class="text-6xl font-extrabold text-slate-800 dark:text-white tracking-tighter">
+                <!-- Favorite Toggle -->
+                <button (click)="weatherService.toggleFavorite(city()!)"
+                    class="bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/40 rounded-full p-2 transition-all shadow-sm group/fav flex-shrink-0"
+                    [ngClass]="isFavorite() ? 'text-red-500 bg-red-50 dark:bg-red-900/40' : 'text-slate-400 hover:text-red-500'"
+                    title="Toggle Favorite">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6 group-hover/fav:scale-110 transition-transform"
+                        [attr.fill]="isFavorite() ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 font-medium text-lg">{{currentDate() | date:'EEEE, MMM d, y'}}
+                • {{currentDate() | date:'h:mm a'}}</p>
+
+            <div class="mt-8 flex flex-col md:flex-row items-center justify-center xl:justify-start gap-6">
+                <span class="text-7xl drop-shadow-lg">{{condition()?.icon}}</span>
+                <div class="text-center md:text-left">
+                    <div class="text-7xl font-black text-slate-800 dark:text-white tracking-tighter">
                         {{weather()?.current?.temperature_2m | number:'1.0-0'}}°
                     </div>
-                    <div class="text-lg font-medium text-slate-600 dark:text-slate-300 capitalize">
+                    <div class="text-2xl font-bold text-slate-600 dark:text-slate-300 capitalize mb-1">
                         {{condition()?.description}}
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 w-full md:w-auto self-end">
+        <div class="grid grid-cols-2 gap-4 w-full xl:w-auto xl:min-w-[400px]">
             <div
-                class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-4 rounded-2xl border border-white/40 dark:border-slate-700/50 flex flex-col items-center justify-center min-w-[120px] transition-colors">
-                <span class="text-2xl mb-1">💧</span>
-                <span class="text-sm text-slate-500 dark:text-slate-400 font-medium">Humidity</span>
+                class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md p-5 rounded-3xl border border-white/50 dark:border-slate-700/50 flex flex-col items-center justify-center transition-colors hover:bg-white/80 dark:hover:bg-slate-700/80">
+                <span class="text-3xl mb-2 filter drop-shadow">💧</span>
                 <span
-                    class="text-lg font-bold text-slate-800 dark:text-white">{{weather()?.current?.relative_humidity_2m}}%</span>
-            </div>
-
-            <div
-                class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-4 rounded-2xl border border-white/40 dark:border-slate-700/50 flex flex-col items-center justify-center min-w-[120px] transition-colors">
-                <span class="text-2xl mb-1">🌬️</span>
-                <span class="text-sm text-slate-500 dark:text-slate-400 font-medium">Wind</span>
-                <span class="text-lg font-bold text-slate-800 dark:text-white">{{weather()?.current?.wind_speed_10m}}
-                    km/h</span>
-            </div>
-
-            <div
-                class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-4 rounded-2xl border border-white/40 dark:border-slate-700/50 flex flex-col items-center justify-center min-w-[120px] transition-colors">
-                <span class="text-2xl mb-1">🌡️</span>
-                <span class="text-sm text-slate-500 dark:text-slate-400 font-medium">Feels Like</span>
+                    class="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Humidity</span>
                 <span
-                    class="text-lg font-bold text-slate-800 dark:text-white">{{weather()?.current?.apparent_temperature
-                    |
-                    number:'1.0-0'}}°</span>
+                    class="text-2xl font-extrabold text-slate-800 dark:text-white">{{weather()?.current?.relative_humidity_2m}}%</span>
             </div>
 
             <div
-                class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-4 rounded-2xl border border-white/40 dark:border-slate-700/50 flex flex-col items-center justify-center min-w-[120px] transition-colors">
-                <span class="text-2xl mb-1">{{weather()?.current?.is_day ? '☀️' : '🌙'}}</span>
-                <span class="text-sm text-slate-500 dark:text-slate-400 font-medium">Time</span>
-                <span class="text-lg font-bold text-slate-800 dark:text-white">{{weather()?.current?.is_day ? 'Day' :
-                    'Night'}}</span>
+                class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md p-5 rounded-3xl border border-white/50 dark:border-slate-700/50 flex flex-col items-center justify-center transition-colors hover:bg-white/80 dark:hover:bg-slate-700/80">
+                <span class="text-3xl mb-2 filter drop-shadow">🌬️</span>
+                <span
+                    class="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Wind</span>
+                <span class="text-2xl font-extrabold text-slate-800 dark:text-white flex items-baseline gap-1">
+                    {{weather()?.current?.wind_speed_10m}} <span
+                        class="text-sm font-semibold text-slate-500 dark:text-slate-400">km/h</span>
+                </span>
+            </div>
+
+            <div
+                class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md p-5 rounded-3xl border border-white/50 dark:border-slate-700/50 flex flex-col items-center justify-center transition-colors hover:bg-white/80 dark:hover:bg-slate-700/80">
+                <span class="text-3xl mb-2 filter drop-shadow">🌡️</span>
+                <span class="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Feels
+                    Like</span>
+                <span
+                    class="text-2xl font-extrabold text-slate-800 dark:text-white">{{weather()?.current?.apparent_temperature
+                    | number:'1.0-0'}}°</span>
+            </div>
+
+            <div
+                class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md p-5 rounded-3xl border border-white/50 dark:border-slate-700/50 flex flex-col items-center justify-center transition-colors hover:bg-white/80 dark:hover:bg-slate-700/80">
+                <span class="text-3xl mb-2 filter drop-shadow">{{weather()?.current?.is_day ? '☀️' : '🌙'}}</span>
+                <span
+                    class="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Time</span>
+                <span class="text-2xl font-extrabold text-slate-800 dark:text-white">{{weather()?.current?.is_day ?
+                    'Day' : 'Night'}}</span>
             </div>
         </div>
+    </div>
+
+    <!-- Bottom Info Ribbon: Suggestions, AQI, Sun -->
+    <div
+        class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-4 pt-4 mt-2 border-t border-slate-200/50 dark:border-slate-700/50">
+
+        <!-- Smart Suggestion (Takes up more space) -->
+        <div
+            class="lg:col-span-1 xl:col-span-1 p-4 rounded-2xl bg-gradient-to-br from-blue-50/90 to-indigo-50/90 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100 dark:border-blue-800/40 flex items-center gap-4 transition-all hover:shadow-sm">
+            <div class="text-3xl filter drop-shadow-sm flex-shrink-0">💡</div>
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-widest text-blue-500/80 flex-shrink-0 mb-1">Smart Guide
+                </h4>
+                <p class="text-sm font-semibold text-blue-900 dark:text-blue-200 leading-tight">
+                    {{clothingSuggestion()}}</p>
+            </div>
+        </div>
+
+        @if(aqiScore() > 0) {
+        <div
+            class="p-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-white/50 dark:border-slate-700/50 flex items-center justify-between transition-all hover:bg-white/80 dark:hover:bg-slate-700/80">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl filter drop-shadow-sm">🍃</span>
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-0.5">Air Quality</h4>
+                    <p class="text-sm font-extrabold" [ngClass]="aqiStatus().color">{{aqiStatus().text}}</p>
+                </div>
+            </div>
+            <div class="text-3xl font-black" [ngClass]="aqiStatus().color">{{aqiScore()}}</div>
+        </div>
+        }
+
+        @if(sunrise() && sunset()) {
+        <div
+            class="p-4 rounded-2xl bg-gradient-to-br from-orange-50/90 to-amber-50/90 dark:from-orange-900/30 dark:to-amber-900/30 border border-orange-100 dark:border-orange-800/40 flex items-center justify-around transition-all hover:shadow-sm">
+            <div class="flex flex-col items-center">
+                <span class="text-2xl mb-1 filter drop-shadow-sm">🌅</span>
+                <span
+                    class="text-xs font-bold text-orange-600/70 dark:text-orange-400/70 uppercase tracking-widest">Sunrise</span>
+                <span class="font-bold text-orange-900 dark:text-orange-100 text-sm mt-0.5">{{sunrise() |
+                    date:'shortTime'}}</span>
+            </div>
+            <div class="w-px h-10 bg-orange-200 dark:bg-orange-800/50"></div>
+            <div class="flex flex-col items-center">
+                <span class="text-2xl mb-1 filter drop-shadow-sm">🌇</span>
+                <span
+                    class="text-xs font-bold text-orange-600/70 dark:text-orange-400/70 uppercase tracking-widest">Sunset</span>
+                <span class="font-bold text-orange-900 dark:text-orange-100 text-sm mt-0.5">{{sunset() |
+                    date:'shortTime'}}</span>
+            </div>
+        </div>
+        }
     </div>
 </div>
 }

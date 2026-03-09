@@ -1,4 +1,17 @@
 <div class="relative w-full max-w-md mx-auto z-50">
+    <div class="flex items-center gap-2 mb-2 justify-end">
+        <!-- Geolocation -->
+        <button tabindex="-1" routerLink="/favorites"
+            class="text-xs flex items-center gap-1 text-red-500 font-medium hover:text-red-600 transition-colors bg-white/50 dark:bg-slate-800/50 backdrop-blur px-3 py-1.5 rounded-full border border-red-200 dark:border-red-900/50 shadow-sm cursor-pointer border-dashed">
+            <span>❤️</span> Manage
+        </button>
+        <button (click)="detectLocation()"
+            class="text-xs flex items-center gap-1 text-primary-600 dark:text-primary-400 font-medium hover:text-primary-800 dark:hover:text-primary-300 transition-colors bg-white/50 dark:bg-slate-800/50 backdrop-blur px-3 py-1.5 rounded-full border border-primary-200 dark:border-primary-900/50 shadow-sm disabled:opacity-50"
+            [disabled]="isLoading()">
+            <span>📍</span> Auto-Locate
+        </button>
+    </div>
+
     <div
         class="relative flex items-center w-full h-12 rounded-full focus-within:shadow-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700/50 overflow-hidden transition-all duration-300">
         <div class="grid place-items-center h-full w-12 text-slate-400 dark:text-slate-500">
@@ -8,14 +21,23 @@
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
         </div>
-        <input
-            class="peer h-full w-full outline-none text-sm text-slate-700 dark:text-slate-200 dark:placeholder-slate-400 pr-10 bg-transparent"
-            type="text" id="search" placeholder="Search for a city..." [(ngModel)]="searchQuery"
-            (ngModelChange)="onSearchInput($event)" (focus)="showDropdown.set(true)" (blur)="onBlur()"
-            autocomplete="off" />
 
-        <div class="absolute right-3 grid place-items-center h-full">
-            @if (isLoading()) {
+        <!-- Voice Input visual cue -->
+        @if (isVoiceActive()) {
+        <div
+            class="absolute left-10 text-xs font-semibold text-red-500 animate-pulse bg-white/90 dark:bg-slate-800 px-2">
+            Listening...</div>
+        }
+
+        <input
+            class="peer h-full w-full outline-none text-sm text-slate-700 dark:text-slate-200 dark:placeholder-slate-400 pr-16 bg-transparent disabled:opacity-40"
+            type="text" id="search" [placeholder]="isVoiceActive() ? '' : 'Search for a city...'"
+            [(ngModel)]="searchQuery" (ngModelChange)="onSearchInput($event)" (focus)="showFavorites()"
+            (blur)="onBlur()" autocomplete="off" [disabled]="isVoiceActive()" />
+
+        <div class="absolute right-3 flex items-center gap-2 h-full z-10">
+            <!-- Clear icon -->
+            @if (isLoading() && !isVoiceActive()) {
             <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-500 dark:border-primary-400"></div>
             } @else if (searchQuery) {
             <button (mousedown)="$event.preventDefault(); clearSearch()"
@@ -26,13 +48,28 @@
                 </svg>
             </button>
             }
+
+            <!-- Mic Icon -->
+            <button (click)="startVoiceSearch()"
+                class="text-slate-400 transition-all p-1.5 rounded-full outline-none focus:ring-2 focus:ring-primary-500/50"
+                [class.text-red-500]="isVoiceActive()" [class.animate-pulse]="isVoiceActive()"
+                [class.hover:text-primary-500]="!isVoiceActive()" [class.dark:hover:text-primary-400]="!isVoiceActive()"
+                title="Voice Search">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 10v2a7 7 0 0 1-14 0v-2m7 10v-4m0-12a3 3 0 0 0-3 3v5a3 3 0 0 0 6 01-5a3 3 0 0 0-3-3l0 0z" />
+                </svg>
+            </button>
         </div>
     </div>
 
-    @if (showDropdown() && results().length > 0) {
+    <!-- Dropdown -->
+    @if (showDropdown() && (results().length > 0 || (searchQuery.trim().length === 0 && favorites().length > 0))) {
     <div
         class="absolute w-full mt-2 bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 max-h-64 overflow-y-auto overflow-x-hidden animate-slideIn transition-colors duration-300">
         <ul class="py-2">
+            @if(results().length > 0) {
             @for (city of results(); track city.id) {
             <li class="px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center justify-between transition-colors group border-b border-slate-50 dark:border-slate-700/50 last:border-0"
                 (mousedown)="selectCity(city)">
@@ -44,6 +81,23 @@
                         {{city.country}}</p>
                 </div>
             </li>
+            }
+            } @else if(favorites().length > 0) {
+            <div
+                class="px-5 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <span>❤️</span> Saved Favorites
+            </div>
+            @for (city of favorites(); track city.id) {
+            <li class="px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center justify-between transition-colors group border-b border-slate-50 dark:border-slate-700/50 last:border-0"
+                (mousedown)="selectFavorite(city)">
+                <div>
+                    <p
+                        class="text-sm font-bold text-slate-800 dark:text-slate-200 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors">
+                        {{city.name}}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{city.country}}</p>
+                </div>
+            </li>
+            }
             }
         </ul>
     </div>

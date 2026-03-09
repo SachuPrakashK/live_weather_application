@@ -1,58 +1,55 @@
-<main
-    class="min-h-screen bg-transparent relative overflow-hidden py-10 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-    <!-- Background elements -->
-    <div
-        class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-100 dark:bg-teal-900/40 rounded-full blur-[100px] opacity-40 mix-blend-multiply dark:mix-blend-screen pointer-events-none transition-colors duration-500">
-    </div>
-    <div
-        class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-100 dark:bg-blue-900/40 rounded-full blur-[100px] opacity-40 mix-blend-multiply dark:mix-blend-screen pointer-events-none transition-colors duration-500">
-    </div>
+<main class="min-h-screen bg-transparent relative py-6 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
 
-    <div class="w-full max-w-5xl mx-auto flex flex-col gap-10 z-10 relative">
-        <header class="text-center space-y-4 pt-4 md:pt-10">
-            <div
-                class="inline-flex items-center justify-center p-3 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-sm border border-white/40 dark:border-slate-700/50 mb-2 transition-colors duration-500">
-                <span class="text-3xl filter drop-shadow-sm">⛅</span>
+    <div class="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 z-10 relative mt-2">
+        <header class="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <div
+                    class="inline-flex items-center justify-center p-3 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl shadow-sm border border-white/50 dark:border-slate-700/50 transition-colors duration-500">
+                    <span class="text-4xl filter drop-shadow-sm">⛅</span>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">
+                        Aura <span
+                            class="bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-indigo-500 dark:from-primary-400 dark:to-indigo-400">Weather</span>
+                    </h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Precision global forecasting.</p>
+                </div>
             </div>
-            <h1
-                class="text-4xl md:text-6xl font-extrabold text-slate-800 dark:text-white tracking-tight transition-colors duration-500">
-                Aura <span
-                    class="bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-blue-500 dark:from-primary-400 dark:to-blue-400">Weather</span>
-            </h1>
-            <p
-                class="text-slate-500 dark:text-slate-300 max-w-lg mx-auto md:text-lg font-light tracking-wide transition-colors duration-500">
-                Real-time weather data and 7-day forecast for any city worldwide, packed in a modern, elegant
-                experience.
-            </p>
-        </header>
 
-        <section class="max-w-2xl mx-auto w-full px-2">
-            <app-search></app-search>
-        </section>
+            <div class="w-full md:w-96 lg:w-[450px]">
+                <app-search></app-search>
+            </div>
+        </header>
 
         @if (errorMsg()) {
         <div
-            class="max-w-md mx-auto w-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-2xl border border-red-100 dark:border-red-800/30 text-center animate-shake transition-colors duration-500">
-            <span class="text-xl inline-block mb-1">⚠️</span>
+            class="w-full bg-red-50/80 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-2xl border border-red-100 dark:border-red-800/30 flex items-center gap-3 backdrop-blur-sm shadow-sm animate-shake">
+            <span class="text-xl">⚠️</span>
             <p class="font-medium text-sm">{{errorMsg()}}</p>
         </div>
         }
 
         @if (!errorMsg()) {
-        <section class="w-full space-y-8 animate-fade pb-10">
-            <app-current-weather [weatherData]="weather()" [cityData]="city()" [isLoading]="isLoading()">
-            </app-current-weather>
+        <section class="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade pb-6">
+            <!-- Left Column: Current & Hourly -->
+            <div class="lg:col-span-8 flex flex-col gap-6">
+                <app-current-weather class="block h-auto" [weatherData]="weather()" [cityData]="city()"
+                    [aqiData]="aqi()" [isLoading]="isLoading()"></app-current-weather>
+                <app-hourly-forecast class="block h-auto" [weatherData]="weather()"
+                    [isLoading]="isLoading()"></app-hourly-forecast>
+            </div>
 
-            <app-forecast [weatherData]="weather()" [isLoading]="isLoading()">
-            </app-forecast>
+            <!-- Right Column: 7 Day Forecast -->
+            <div class="lg:col-span-4 flex flex-col h-full gap-6">
+                <app-forecast class="block h-full flex-grow" [weatherData]="weather()"
+                    [isLoading]="isLoading()"></app-forecast>
+            </div>
         </section>
         }
     </div>
 
     <footer
-        class="mt-auto pt-10 pb-6 w-full text-center text-slate-400 dark:text-slate-500 text-sm z-10 relative transition-colors duration-500">
-        <p>Aura Weather &copy; 2026</p>
-        <p class="mt-1 text-xs opacity-75">Designed for a seamless and beautiful real-time weather tracking experience.
-        </p>
+        class="mt-auto pt-6 pb-4 w-full text-center text-slate-400 dark:text-slate-500 text-sm z-10 relative transition-colors duration-500">
+        <p>Aura Weather &copy; 2026 Designed for a seamless real-time weather tracking experience.</p>
     </footer>
 </main>
