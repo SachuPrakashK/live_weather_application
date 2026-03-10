@@ -98,24 +98,47 @@
     </div>
 
     <!-- Bottom Info Ribbon: Suggestions, AQI, Sun -->
-    <div
-        class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-4 pt-4 mt-2 border-t border-slate-200/50 dark:border-slate-700/50">
+    <div class="relative z-10 flex flex-col gap-4 pt-4 mt-2 border-t border-slate-200/50 dark:border-slate-700/50">
 
-        <!-- Smart Suggestion (Takes up more space) -->
-        <div
-            class="lg:col-span-1 xl:col-span-1 p-4 rounded-2xl bg-gradient-to-br from-blue-50/90 to-indigo-50/90 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100 dark:border-blue-800/40 flex items-center gap-4 transition-all hover:shadow-sm">
-            <div class="text-3xl filter drop-shadow-sm flex-shrink-0">💡</div>
-            <div>
-                <h4 class="text-xs font-bold uppercase tracking-widest text-blue-500/80 flex-shrink-0 mb-1">Smart Guide
-                </h4>
-                <p class="text-sm font-semibold text-blue-900 dark:text-blue-200 leading-tight">
-                    {{clothingSuggestion()}}</p>
+        <!-- Smart Guide & Sunrise/Sunset Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+            <!-- Smart Suggestion -->
+            <div
+                class="p-4 rounded-2xl bg-gradient-to-br from-blue-50/90 to-indigo-50/90 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100 dark:border-blue-800/40 flex items-center gap-4 transition-all hover:shadow-sm">
+                <div class="text-3xl filter drop-shadow-sm flex-shrink-0">💡</div>
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-blue-500/80 flex-shrink-0 mb-1">Smart
+                        Guide</h4>
+                    <p class="text-sm font-semibold text-blue-900 dark:text-blue-200 leading-tight">
+                        {{clothingSuggestion()}}</p>
+                </div>
             </div>
+
+            @if(sunrise() && sunset()) {
+            <div
+                class="p-4 rounded-2xl bg-gradient-to-br from-orange-50/90 to-amber-50/90 dark:from-orange-900/30 dark:to-amber-900/30 border border-orange-100 dark:border-orange-800/40 flex items-center justify-around transition-all hover:shadow-sm">
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl mb-1 filter drop-shadow-sm">🌅</span>
+                    <span
+                        class="text-xs font-bold text-orange-600/70 dark:text-orange-400/70 uppercase tracking-widest">Sunrise</span>
+                    <span class="font-bold text-orange-900 dark:text-orange-100 text-sm mt-0.5">{{sunrise() |
+                        date:'shortTime'}}</span>
+                </div>
+                <div class="w-px h-10 bg-orange-200 dark:bg-orange-800/50"></div>
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl mb-1 filter drop-shadow-sm">🌇</span>
+                    <span
+                        class="text-xs font-bold text-orange-600/70 dark:text-orange-400/70 uppercase tracking-widest">Sunset</span>
+                    <span class="font-bold text-orange-900 dark:text-orange-100 text-sm mt-0.5">{{sunset() |
+                        date:'shortTime'}}</span>
+                </div>
+            </div>
+            }
         </div>
 
         @if(aqiScore() > 0) {
         <div
-            class="lg:col-span-3 p-5 rounded-3xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-white/50 dark:border-slate-700/50 flex flex-col transition-all hover:bg-white/80 dark:hover:bg-slate-700/80 shadow-sm mt-2">
+            class="p-5 rounded-3xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-white/50 dark:border-slate-700/50 flex flex-col transition-all hover:bg-white/80 dark:hover:bg-slate-700/80 shadow-sm mt-2">
 
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
                 <div class="flex items-center gap-3">
@@ -196,27 +219,6 @@
                     class="w-full h-[calc(100%-1.5rem)] relative bg-white/30 dark:bg-slate-900/40 rounded-2xl border border-white/20 dark:border-slate-700/30 p-2">
                     <canvas baseChart [data]="aqiChartData" [options]="aqiChartOptions" [type]="aqiChartType"></canvas>
                 </div>
-            </div>
-        </div>
-        }
-
-        @if(sunrise() && sunset()) {
-        <div
-            class="p-4 rounded-2xl bg-gradient-to-br from-orange-50/90 to-amber-50/90 dark:from-orange-900/30 dark:to-amber-900/30 border border-orange-100 dark:border-orange-800/40 flex items-center justify-around transition-all hover:shadow-sm">
-            <div class="flex flex-col items-center">
-                <span class="text-2xl mb-1 filter drop-shadow-sm">🌅</span>
-                <span
-                    class="text-xs font-bold text-orange-600/70 dark:text-orange-400/70 uppercase tracking-widest">Sunrise</span>
-                <span class="font-bold text-orange-900 dark:text-orange-100 text-sm mt-0.5">{{sunrise() |
-                    date:'shortTime'}}</span>
-            </div>
-            <div class="w-px h-10 bg-orange-200 dark:bg-orange-800/50"></div>
-            <div class="flex flex-col items-center">
-                <span class="text-2xl mb-1 filter drop-shadow-sm">🌇</span>
-                <span
-                    class="text-xs font-bold text-orange-600/70 dark:text-orange-400/70 uppercase tracking-widest">Sunset</span>
-                <span class="font-bold text-orange-900 dark:text-orange-100 text-sm mt-0.5">{{sunset() |
-                    date:'shortTime'}}</span>
             </div>
         </div>
         }
