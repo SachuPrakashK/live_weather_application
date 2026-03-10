@@ -113,16 +113,19 @@
             class="col-span-1 lg:col-span-2 py-8 text-center flex flex-col items-center justify-center p-6 bg-red-50/50 dark:bg-red-900/10 rounded-2xl border border-red-200 dark:border-red-800/50">
             <span class="text-4xl filter drop-shadow mb-3">⚠️</span>
             <h4 class="text-lg font-bold text-red-600 dark:text-red-400 mb-1">API Key Error</h4>
-            <p class="text-sm font-medium text-slate-500 dark:text-slate-400 max-w-sm mb-4">{{ errorMessage() }}</p>
-            <div class="flex items-center gap-2 max-w-xs w-full">
-                <input #apiKeyInput type="text" placeholder="Paste your GNews API Key here"
-                    class="text-sm w-full px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border-2 border-red-200 dark:border-red-900/50 focus:border-red-400 dark:focus:border-red-500 outline-none transition-colors">
-                <button (click)="saveApiKey(apiKeyInput.value)"
-                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm">Save</button>
+            <p class="text-sm text-slate-500 mb-6 font-medium leading-relaxed">
+                You have reached your daily free limit for the News API.
+                Please grab a new, free massive-limit key from <a href="https://newsdata.io/" target="_blank"
+                    class="text-blue-500 hover:text-blue-600 underline font-bold transition-colors">NewsData.io</a> and
+                paste it below to instantly reconnect:
+            </p>
+            <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">🔑</span>
+                <input #apiKeyInput type="text" placeholder="Enter your free NewsData.io API Key..."
+                    class="text-sm w-full pl-12 pr-4 py-2 rounded-lg bg-white dark:bg-slate-800 border-2 border-red-200 dark:border-red-900/50 focus:border-red-400 dark:focus:border-red-500 outline-none transition-colors">
             </div>
-            <p class="text-[10px] text-slate-400 mt-4 leading-relaxed max-w-xs">You can get a free key from <a
-                    href="https://gnews.io/" target="_blank"
-                    class="text-primary-500 hover:underline">gnews.io</a>.<br>It is stored securely in your browser.</p>
+            <button (click)="saveApiKey(apiKeyInput.value)"
+                class="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm w-full max-w-xs">Save</button>
         </div>
         } @else {
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">

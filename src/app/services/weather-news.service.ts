@@ -11,11 +11,20 @@ export class WeatherNewsService {
     private http = inject(HttpClient);
     // We allow setting the API key dynamically from localStorage or defaulting to the user's key.
     private getApiKey(): string {
-        return localStorage.getItem('gnews_api_key') || '92ac1b32d0005523df4e0e6424719d70';
+        if (typeof localStorage !== 'undefined') {
+            const storedKey = localStorage.getItem('newsdata_api_key');
+            // Check valid structure (newsdata keys usually start with pub_...)
+            if (storedKey && storedKey.length > 25) {
+                return storedKey;
+            }
+        }
+        return 'pub_917066b709e0452d9f67c19715fd52c8';
     }
 
     setApiKey(key: string) {
-        localStorage.setItem('gnews_api_key', key);
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('newsdata_api_key', key);
+        }
     }
 
     getNews(filter: NewsFilter, city?: string): Observable<NewsArticle[]> {
@@ -45,24 +54,29 @@ export class WeatherNewsService {
             searchQuery += ` OR weather ${city} OR rain ${city} OR cyclone ${city}`;
         }
 
-        const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchQuery)}&lang=en&country=in&max=10&apikey=${this.getApiKey()}`;
+        const apiKey = this.getApiKey();
+        if (!apiKey) {
+            return throwError(() => new Error('API Key is missing. Please provide a NewsData.io key.'));
+        }
+
+        const url = `https://newsdata.io/api/1/latest?apikey=${apiKey}&q=${encodeURIComponent(searchQuery)}&language=en&country=in`;
 
         return this.http.get<any>(url).pipe(
             map(res => {
-                if (!res.articles) {
+                if (!res.results || res.results.length === 0) {
                     throw new Error('No articles found');
                 }
-                return res.articles.map((a: any) => ({
+                return res.results.map((a: any) => ({
                     title: a.title,
-                    description: a.description,
-                    source: a.source.name,
-                    publishedAt: new Date(a.publishedAt),
-                    imageUrl: a.image,
-                    url: a.url
+                    description: a.description || 'No description available.',
+                    source: a.source_id || 'News Source',
+                    publishedAt: new Date(a.pubDate),
+                    imageUrl: a.image_url || 'https://images.unsplash.com/photo-1584267385494-9fdd9a71ad75?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                    url: a.link
                 }));
             }),
             catchError((err) => {
-                const msg = err?.error?.errors?.[0] || 'Failed to fetch real news from GNews API.';
+                const msg = err?.error?.results?.message || err.message || 'Failed to fetch real news from NewsData API.';
                 return throwError(() => new Error(msg));
             })
         );
@@ -70,20 +84,23 @@ export class WeatherNewsService {
 
     getWeatherAlerts(city?: string): Observable<NewsArticle[]> {
         const query = city ? `weather warning alert ${city}` : `weather warning alert India`;
-        const url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&country=in&max=3&apikey=${this.getApiKey()}`;
+        const apiKey = this.getApiKey();
+        if (!apiKey) return of([]);
+
+        const url = `https://newsdata.io/api/1/latest?apikey=${apiKey}&q=${encodeURIComponent(query)}&language=en&country=in`;
 
         return this.http.get<any>(url).pipe(
             map(res => {
-                if (!res.articles) {
+                if (!res.results) {
                     return [];
                 }
-                return res.articles.map((a: any) => ({
+                return res.results.slice(0, 3).map((a: any) => ({
                     title: a.title,
-                    description: a.description,
-                    source: a.source.name,
-                    publishedAt: new Date(a.publishedAt),
-                    imageUrl: a.image,
-                    url: a.url
+                    description: a.description || 'No description available.',
+                    source: a.source_id || 'News Source',
+                    publishedAt: new Date(a.pubDate),
+                    imageUrl: a.image_url || 'https://images.unsplash.com/photo-1527482797697-8795b05a13fe?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+                    url: a.link
                 }));
             }),
             catchError(() => of([])) // alerts can fail silently returning empty
