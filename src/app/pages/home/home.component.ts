@@ -4,6 +4,7 @@ import { SearchComponent } from '../../components/search/search.component';
 import { CurrentWeatherComponent } from '../../components/current-weather/current-weather.component';
 import { ForecastComponent } from '../../components/forecast/forecast.component';
 import { HourlyForecastComponent } from '../../components/hourly-forecast/hourly-forecast.component';
+import { WeatherNewsComponent } from '../../components/weather-news/weather-news.component';
 import { WeatherService } from '../../services/weather.service';
 import { City } from '../../models/city.model';
 import { WeatherResponse, AQIResponse } from '../../models/weather.model';
@@ -12,7 +13,7 @@ import { combineLatest, forkJoin, of, switchMap, catchError, Subject, takeUntil 
 @Component({
     selector: 'app-home',
     standalone: true,
-    imports: [CommonModule, SearchComponent, CurrentWeatherComponent, HourlyForecastComponent, ForecastComponent],
+    imports: [CommonModule, SearchComponent, CurrentWeatherComponent, HourlyForecastComponent, ForecastComponent, WeatherNewsComponent],
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush

@@ -30,19 +30,55 @@ export class HourlyForecastComponent implements OnChanges {
         responsive: true,
         maintainAspectRatio: false,
         elements: {
-            line: { tension: 0.4 }
+            line: { tension: 0.4, borderWidth: 3 },
+            point: { radius: 3, hitRadius: 10, hoverRadius: 5 }
         },
         scales: {
-            x: { grid: { display: false } },
-            y: { display: false }
+            x: {
+                grid: { display: false },
+                ticks: { color: 'rgba(148, 163, 184, 0.8)', font: { size: 10 } }
+            },
+            y: {
+                display: true,
+                position: 'left',
+                grid: { color: 'rgba(148, 163, 184, 0.1)', tickLength: 0 },
+                ticks: { color: 'rgba(148, 163, 184, 0.8)', font: { size: 10 }, callback: (val) => val + '°C', padding: 10 }
+            },
+            y1: {
+                display: true,
+                position: 'right',
+                grid: { display: false },
+                min: 0,
+                max: 100,
+                ticks: { color: 'rgba(148, 163, 184, 0.8)', font: { size: 10 }, callback: (val) => val + '%', padding: 10 }
+            }
         },
         plugins: {
-            legend: { display: false },
+            legend: {
+                display: true,
+                position: 'top',
+                labels: { color: 'rgba(148, 163, 184, 0.9)', usePointStyle: true, boxWidth: 8, font: { size: 11, weight: 'bold' } }
+            },
             tooltip: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                titleColor: '#f8fafc',
+                bodyColor: '#e2e8f0',
+                padding: 12,
+                cornerRadius: 8,
                 callbacks: {
-                    label: (ctx) => `${ctx.formattedValue}°`
+                    label: (ctx) => {
+                        const label = ctx.dataset.label || '';
+                        const val = ctx.formattedValue;
+                        return label === 'Temperature' ? `${label}: ${val}°C` : `${label}: ${val}%`;
+                    }
                 }
             }
+        },
+        interaction: {
+            mode: 'index',
+            intersect: false
         }
     };
 
@@ -94,6 +130,19 @@ export class HourlyForecastComponent implements OnChanges {
                         pointHoverBackgroundColor: '#fff',
                         pointHoverBorderColor: 'rgba(56, 189, 248, 0.8)',
                         fill: 'origin',
+                        yAxisID: 'y'
+                    },
+                    {
+                        data: cards.map(c => c.rain),
+                        label: 'Rain Probability',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderColor: 'rgba(99, 102, 241, 0.6)',
+                        pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(99, 102, 241, 0.8)',
+                        fill: 'origin',
+                        yAxisID: 'y1'
                     }
                 ]
             };

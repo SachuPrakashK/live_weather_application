@@ -57,25 +57,37 @@
   background-color: rgba(100, 116, 139, 0.8);
 }
 
-/* Dynamic Weather Themes */
+/* Dynamic Weather Themes - Images */
 .theme-clear {
-  @apply bg-gradient-to-br from-sky-400 to-blue-500 dark:from-slate-900 dark:to-slate-800;
+  background-image: url('https://images.unsplash.com/photo-1513628253939-010e64ac66cd?auto=format&fit=crop&w=1920&q=80');
+}
+
+.theme-clear-night {
+  background-image: url('https://images.unsplash.com/photo-1507400492013-162706c8c05e?auto=format&fit=crop&w=1920&q=80');
 }
 
 .theme-cloudy {
-  @apply bg-gradient-to-br from-slate-300 to-slate-400 dark:from-slate-800 dark:to-slate-700;
+  background-image: url('https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=1920&q=80');
+}
+
+.theme-cloudy-night {
+  background-image: url('https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?auto=format&fit=crop&w=1920&q=80');
 }
 
 .theme-rain {
-  @apply bg-gradient-to-b from-slate-400 via-slate-500 to-slate-600 dark:from-slate-800 dark:via-slate-900 dark:to-black;
+  background-image: url('https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=1920&q=80');
+}
+
+.theme-rain-night {
+  background-image: url('https://images.unsplash.com/photo-1518288774672-b94e808873ff?auto=format&fit=crop&w=1920&q=80');
 }
 
 .theme-snow {
-  @apply bg-gradient-to-tl from-slate-100 to-sky-100 dark:from-indigo-900 dark:to-slate-950;
+  background-image: url('https://images.unsplash.com/photo-1542601098-8fc114e148e2?auto=format&fit=crop&w=1920&q=80');
 }
 
-.theme-night {
-  @apply bg-gradient-to-t from-slate-900 via-indigo-950 to-black;
+.theme-snow-night {
+  background-image: url('https://images.unsplash.com/photo-1483664852095-d6cc6870702d?auto=format&fit=crop&w=1920&q=80');
 }
 
 /* Rain Effect */

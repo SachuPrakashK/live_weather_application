@@ -46,6 +46,8 @@ export interface AQIResponse {
         pm2_5: number[];
         carbon_monoxide: number[];
         nitrogen_dioxide: number[];
+        sulphur_dioxide: number[];
+        ozone: number[];
         us_aqi: number[];
     }
 }

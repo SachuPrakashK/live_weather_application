@@ -1,0 +1,166 @@
+<div class="flex flex-col gap-6 animate-fade">
+    <!-- Weather Alerts Banner Layer -->
+    @if (!isAlertsLoading() && alertArticles().length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        @for (alert of alertArticles(); track alert.title) {
+        <a [href]="alert.url" target="_blank" aria-label="Alert Warning"
+            class="p-4 rounded-2xl bg-gradient-to-tr from-red-600/90 to-orange-500/90 dark:from-red-900/60 dark:to-orange-800/60 text-white shadow shadow-red-500/20 border border-red-500/30 flex items-start gap-3 hover:-translate-y-1 transition-transform group">
+            <span class="text-2xl pt-1">⚠️</span>
+            <div class="flex flex-col gap-1 w-full">
+                <h4 class="font-bold text-sm leading-tight line-clamp-2">{{ alert.title }}</h4>
+                <p class="text-xs text-red-50/90 line-clamp-2 md:line-clamp-3">{{ alert.description }}</p>
+                <div
+                    class="mt-2 text-[10px] font-bold tracking-widest uppercase opacity-75 group-hover:opacity-100 flex items-center justify-between">
+                    <span>{{ alert.source }}</span>
+                    <span>Read More →</span>
+                </div>
+            </div>
+        </a>
+        }
+    </div>
+    }
+
+    <!-- Trending Carousel -->
+    <div class="flex flex-col gap-4">
+        <h3 class="text-xl font-extrabold text-slate-800 dark:text-white tracking-tight flex items-center gap-2">
+            <span>🔥</span> Trending News
+        </h3>
+
+        @if (!errorMessage() && carouselArticles().length > 0) {
+        <div class="relative group">
+            <button (click)="scrollCarousel(-1, carousel)"
+                class="absolute z-10 left-2 top-1/2 -translate-y-1/2 bg-white/70 dark:bg-slate-800/70 p-2 rounded-full shadow hover:bg-white dark:hover:bg-slate-700 transition opacity-0 group-hover:opacity-100 backdrop-blur-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 dark:text-slate-300" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
+            <div #carousel class="flex gap-4 overflow-x-auto scrollbar-hide carousel pb-4 snap-x snap-mandatory pr-8">
+                @for (news of carouselArticles(); track news.title) {
+                <a [href]="news.url" target="_blank"
+                    class="snap-center w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.66rem)] flex-shrink-0 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md p-4 rounded-2xl border border-white/40 dark:border-slate-700/50 flex flex-col md:flex-row gap-4 hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all duration-300 shadow-sm cursor-pointer group/card h-[160px] md:h-[180px]">
+                    <div
+                        class="w-full md:w-2/5 h-32 md:h-full rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-700 flex-shrink-0 relative">
+                        <img [src]="news.imageUrl || 'https://placehold.co/600x400/e2e8f0/64748b?text=News'"
+                            alt="news image"
+                            class="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                            onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=News'">
+                    </div>
+                    <div class="flex flex-col flex-1 justify-between h-full pt-1">
+                        <div>
+                            <span
+                                class="text-[10px] font-black uppercase text-primary-500 dark:text-primary-400 mb-1 block">{{
+                                news.source }}</span>
+                            <h4
+                                class="font-bold text-slate-800 dark:text-white text-sm md:text-base leading-snug line-clamp-3 md:line-clamp-3">
+                                {{ news.title }}</h4>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-400 mt-2">{{ news.publishedAt | date:'medium'
+                            }}</span>
+                    </div>
+                </a>
+                }
+            </div>
+
+            <button (click)="scrollCarousel(1, carousel)"
+                class="absolute z-10 right-2 top-1/2 -translate-y-1/2 bg-white/70 dark:bg-slate-800/70 p-2 rounded-full shadow hover:bg-white dark:hover:bg-slate-700 transition opacity-0 group-hover:opacity-100 backdrop-blur-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 dark:text-slate-300" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+        }
+    </div>
+
+    <!-- Filters and List -->
+    <div class="glass-card p-6 md:p-8 flex flex-col gap-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <h3 class="text-xl font-extrabold text-slate-800 dark:text-white tracking-tight flex items-center gap-2">
+                <span>📰</span> Weather News
+                <span class="text-sm font-medium text-slate-400">
+                    – {{ city ? city.name : 'India' }}
+                </span>
+            </h3>
+
+            <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-2 snap-x">
+                @for (filter of filters; track filter) {
+                <button (click)="setFilter(filter)" [class.bg-primary-500]="selectedFilter() === filter"
+                    [class.text-white]="selectedFilter() === filter"
+                    [class.border-primary-500]="selectedFilter() === filter"
+                    [class.bg-white/50]="selectedFilter() !== filter"
+                    [class.dark:bg-slate-800/50]="selectedFilter() !== filter"
+                    [class.text-slate-600]="selectedFilter() !== filter"
+                    [class.dark:text-slate-300]="selectedFilter() !== filter"
+                    [class.border-white/40]="selectedFilter() !== filter"
+                    [class.dark:border-slate-700/50]="selectedFilter() !== filter"
+                    class="snap-start flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border hover:bg-primary-50 dark:hover:bg-primary-900/40 hover:text-primary-600 dark:hover:text-primary-400 hover:border-primary-200 dark:hover:border-primary-800">
+                    {{ filter }}
+                </button>
+                }
+            </div>
+        </div>
+
+        @if (isLoading()) {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            @for (i of [1,2,3,4]; track i) {
+            <div class="h-32 bg-slate-200 dark:bg-slate-700 animate-pulse rounded-2xl"></div>
+            }
+        </div>
+        } @else if (errorMessage()) {
+        <div
+            class="col-span-1 lg:col-span-2 py-8 text-center flex flex-col items-center justify-center p-6 bg-red-50/50 dark:bg-red-900/10 rounded-2xl border border-red-200 dark:border-red-800/50">
+            <span class="text-4xl filter drop-shadow mb-3">⚠️</span>
+            <h4 class="text-lg font-bold text-red-600 dark:text-red-400 mb-1">API Key Error</h4>
+            <p class="text-sm font-medium text-slate-500 dark:text-slate-400 max-w-sm mb-4">{{ errorMessage() }}</p>
+            <div class="flex items-center gap-2 max-w-xs w-full">
+                <input #apiKeyInput type="text" placeholder="Paste your GNews API Key here"
+                    class="text-sm w-full px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border-2 border-red-200 dark:border-red-900/50 focus:border-red-400 dark:focus:border-red-500 outline-none transition-colors">
+                <button (click)="saveApiKey(apiKeyInput.value)"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm">Save</button>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-4 leading-relaxed max-w-xs">You can get a free key from <a
+                    href="https://gnews.io/" target="_blank"
+                    class="text-primary-500 hover:underline">gnews.io</a>.<br>It is stored securely in your browser.</p>
+        </div>
+        } @else {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            @for (news of newsArticles(); track news.title) {
+            <a [href]="news.url" target="_blank"
+                class="bg-white/50 dark:bg-slate-800/50 backdrop-blur-md p-4 rounded-2xl border border-white/40 dark:border-slate-700/50 flex flex-col sm:flex-row gap-4 hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all duration-300 shadow-sm cursor-pointer group/article h-auto sm:h-[160px]">
+
+                <!-- Thumbnail Container with Error Fallback (using css/if could be tricky, using basic img) -->
+                <div
+                    class="w-full sm:w-[130px] h-[130px] rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-700 flex-shrink-0 flex items-center justify-center">
+                    <img [src]="news.imageUrl || 'https://placehold.co/600x400/e2e8f0/64748b?text=News'"
+                        alt="Article image"
+                        class="w-full h-full object-cover group-hover/article:scale-105 transition-transform duration-500"
+                        onerror="this.src='https://placehold.co/600x400/e2e8f0/64748b?text=News'">
+                </div>
+
+                <div class="flex flex-col flex-1 justify-between h-full pt-1 min-w-0">
+                    <div class="flex flex-col gap-1.5">
+                        <span
+                            class="text-[10px] font-black uppercase tracking-wider text-indigo-500 dark:text-indigo-400">{{
+                            news.source }}</span>
+                        <h4 class="font-bold text-slate-800 dark:text-white leading-tight line-clamp-2 md:line-clamp-2"
+                            title="{{ news.title }}">{{ news.title }}</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{{ news.description }}</p>
+                    </div>
+                    <span class="text-[11px] font-medium text-slate-400 mt-3 sm:mt-0">{{ news.publishedAt |
+                        date:'medium' }}</span>
+                </div>
+            </a>
+            }
+
+            @if (newsArticles().length === 0) {
+            <div class="col-span-1 lg:col-span-2 py-10 text-center flex flex-col items-center">
+                <span class="text-4xl filter grayscale opacity-40 mb-3">📭</span>
+                <p class="text-slate-500 font-medium">No updates found for this category currently.</p>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>

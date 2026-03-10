@@ -1,10 +1,11 @@
 <div class="fixed inset-0 pointer-events-none -z-10 transition-colors duration-1000 bg-cover bg-center"
   [ngClass]="bgClass()">
-  @if (bgClass() === 'theme-rain') {
-  <div class="absolute inset-0 rain-overlay opacity-60 w-full h-full"></div>
+  <div class="absolute inset-0 bg-slate-100/30 dark:bg-black/60 transition-colors duration-1000"></div>
+  @if (bgClass().includes('rain')) {
+  <div class="absolute inset-0 rain-overlay opacity-50 w-full h-full"></div>
   }
-  @if (bgClass() === 'theme-snow') {
-  <div class="absolute inset-0 snow-overlay opacity-80 w-full h-full"></div>
+  @if (bgClass().includes('snow')) {
+  <div class="absolute inset-0 snow-overlay opacity-60 w-full h-full"></div>
   }
 </div>
 

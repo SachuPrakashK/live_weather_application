@@ -116,7 +116,7 @@ export class WeatherService {
     }
 
     getAQI(lat: number, lon: number): Observable<AQIResponse> {
-        const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,us_aqi&timezone=auto`;
+        const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,us_aqi&timezone=auto`;
         return this.http.get<AQIResponse>(url).pipe(shareReplay(1));
     }
 
@@ -160,11 +160,6 @@ export class WeatherService {
     }
 
     updateBackground(code: number, isDay: boolean) {
-        if (!isDay) {
-            this.currentBackgroundSubject.next('theme-night');
-            return;
-        }
-
         let bg = 'theme-clear';
         if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99].includes(code)) {
             bg = 'theme-rain';
@@ -172,6 +167,10 @@ export class WeatherService {
             bg = 'theme-snow';
         } else if ([2, 3, 45, 48].includes(code)) {
             bg = 'theme-cloudy';
+        }
+
+        if (!isDay) {
+            bg += '-night';
         }
 
         this.currentBackgroundSubject.next(bg);
